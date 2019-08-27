@@ -3,10 +3,11 @@ import json
 import pymongo
 from mitmproxy import ctx
 
-# attention +--
+# attention mongodb settings +--
 client = pymongo.MongoClient('localhost')
 db = client['dedao']
 collection = db['books']
+# ----------------------
 
 
 def response(flow):
@@ -16,6 +17,7 @@ def response(flow):
     :return:
     '''
     global collection
+    # 精简之后的数据接口url
     url = 'https://dedao.igetget.com/v3/discover/bookList'
     if flow.request.url.startswith(url):
         text = flow.response.text
@@ -28,6 +30,6 @@ def response(flow):
                 'summary': book.get('other_share_summary'),
                 'price': book.get('price')
             }
-            # attention the log setting
+            # attention the log setting +--
             ctx.log.info(str(data))
             collection.insert(data)
